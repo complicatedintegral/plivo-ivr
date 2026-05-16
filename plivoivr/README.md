@@ -1,4 +1,4 @@
-# InspireWorks — Multi-Level IVR System with OTP Authentication
+# Plivo — Multi-Level IVR System with OTP Authentication
 
 This is a robust Spring Boot application that integrates with the Plivo Voice API to deliver a multi-level Interactive Voice Response (IVR) flow. It features secure caller authentication via an OTP challenge, contextual language routing, and final-action handling (audio streaming and live call forwarding).
 

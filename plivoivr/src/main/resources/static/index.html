@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InspireWorks — IVR Control Center</title>
+    <style>
+        body {
+            font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            max-width: 420px;
+            width: 100%;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #111111;
+            margin-bottom: 5px;
+            letter-spacing: -0.5px;
+        }
+        .subtitle {
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .btn {
+            background-color: #0070f3;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            box-shadow: 0 4px 14px rgba(0, 112, 243, 0.3);
+        }
+        .btn:hover {
+            background-color: #0061d5;
+            box-shadow: 0 6px 20px rgba(0, 112, 243, 0.4);
+        }
+        .btn:disabled {
+            background-color: #a8cef7;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+        #statusMessage {
+            margin-top: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 12px;
+            border-radius: 6px;
+            display: none;
+        }
+        .success {
+            background-color: #e6f4ea;
+            color: #137333;
+            display: block !important;
+        }
+        .error {
+            background-color: #fce8e6;
+            color: #c5221f;
+            display: block !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="logo">InspireWorks</div>
+        <div class="subtitle">Communications Management Portal</div>
+        <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 25px;">
+        
+        <p style="font-size: 15px; color: #333; margin-bottom: 25px; line-height: 1.5;">
+            Click below to initiate an outbound IVR secure verification call sequence.
+        </p>
+
+        <button id="callBtn" class="btn" onclick="triggerOutboundCall()">Launch IVR Verification Flow</button>
+        
+        <div id="statusMessage"></div>
+    </div>
+
+    <script>
+        async function triggerOutboundCall() {
+            const btn = document.getElementById('callBtn');
+            const status = document.getElementById('statusMessage');
+            
+            // Set loading state
+            btn.disabled = true;
+            btn.innerText = "Connecting to Plivo API...";
+            status.className = "";
+            status.style.display = "none";
+
+            try {
+                // Hit the Spring Boot endpoint relatively
+                const response = await fetch('/ivr/make-call');
+                const text = await response.text();
+
+                if (response.ok && text.toLowerCase().includes('success')) {
+                    status.className = "success";
+                    status.innerText = text;
+                } else {
+                    status.className = "error";
+                    status.innerText = "Error execution: " + text;
+                }
+            } catch (err) {
+                status.className = "error";
+                status.innerText = "Failed to communicate with local Spring Boot server.";
+            } finally {
+                // Restore button state
+                btn.disabled = false;
+                btn.innerText = "Launch IVR Verification Flow";
+            }
+        }
+    </script>
+</body>
+</html>
